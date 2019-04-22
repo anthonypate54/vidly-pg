@@ -8,7 +8,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const movies = await Movie.find().sort("name");
+  const movies = await Movie.find();
   res.send(movies);
 });
 
@@ -21,12 +21,9 @@ router.post("/", auth, async (req, res) => {
 
   const movie = new Movie({
     title: req.body.title,
-    genre: {
-      _id: genre._id,
-      name: genre.name
-    },
+    genreId: genre.id,
     numberInStock: req.body.numberInStock,
-    dailyRentalRate: req.body.dailyRentalRate
+    dailyRentalRate: req.body.dailyRentalRate,
   });
   await movie.save();
 
@@ -44,14 +41,11 @@ router.put("/:id", async (req, res) => {
     req.params.id,
     {
       title: req.body.title,
-      genre: {
-        _id: genre._id,
-        name: genre.name
-      },
+      genreId: genre.id,
       numberInStock: req.body.numberInStock,
-      dailyRentalRate: req.body.dailyRentalRate
-    },
-    { new: true }
+      dailyRentalRate: req.body.dailyRentalRate,
+      liked: req.body.liked
+    }
   );
 
   if (!movie)
@@ -60,7 +54,7 @@ router.put("/:id", async (req, res) => {
   res.send(movie);
 });
 
-router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   const movie = await Movie.findByIdAndRemove(req.params.id);
 
   if (!movie)
@@ -69,7 +63,7 @@ router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   res.send(movie);
 });
 
-router.get("/:id", validateObjectId, async (req, res) => {
+router.get("/:id", async (req, res) => {
   const movie = await Movie.findById(req.params.id);
 
   if (!movie)

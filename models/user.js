@@ -8,7 +8,7 @@ class User {
       this.name = userObj.name;
       this.email = userObj.email;
       this.password = userObj.password;
-      console.log(this);
+      this.isadmin = userObj.isadmin;
      }
 
     async save() {
@@ -17,7 +17,7 @@ class User {
       try {
         await client.query('BEGIN');
         try {
-          res =  await client.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id',[this.name, this.email, this.password]);
+          res =  await client.query('INSERT INTO users (name, email, password, isAdmin) VALUES ($1, $2, $3, $4) RETURNING id',[this.name, this.email, this.password, this.isAdmin]);
           await client.query('COMMIT');
         }
         catch(err) {
@@ -34,8 +34,7 @@ class User {
        const client = await pool.connect();
       let res = "";
       try {
-        res = await client.query('SELECT email FROM users WHERE email = $1', [email.email]);
-        console.log(res);
+        res = await client.query('SELECT * FROM users WHERE email = $1', [email.email]);
       }
       catch(err) {
           throw err;
@@ -66,10 +65,10 @@ class User {
   generateAuthToken() {
     const token = jwt.sign(
       {
-        _id: this._id,
+        id: this.id,
         email: this.email,
         name: this.name,
-        isAdmin: this.isAdmin
+        isadmin: this.isadmin
       },
       config.get("jwtPrivateKey")
     );
@@ -93,7 +92,8 @@ function validateUser(user) {
     password: Joi.string()
       .min(5)
       .max(255)
-      .required()
+      .required(),
+    isAdmin: Joi.bool()
   };
 
   return Joi.validate(user, schema);

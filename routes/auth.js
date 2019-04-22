@@ -13,8 +13,10 @@ router.post("/", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (!user) return res.status(400).send("Invalid email or password.");
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  const validPassword = await bcrypt.compare(req.body.password, user[0].password);
   if (!validPassword) return res.status(400).send("Invalid email or password.");
+
+  user  = new User(user[0]);
 
   const token = user.generateAuthToken();
   res.send(token);
