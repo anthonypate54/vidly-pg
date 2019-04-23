@@ -111,7 +111,7 @@ function validateMovie(movie) {
     genreId: Joi.number().required(),
     numberInStock: Joi.number().min(1).max(15).required(),
     dailyRentalRate: Joi.number().min(2).required(),
-    liked: Joi.bool()
+    liked: Joi.boolean()
   };
 
   return Joi.validate(movie, schema);

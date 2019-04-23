@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const customers = await Customer.find().sort("name");
+  const customers = await Customer.find();
   res.send(customers);
 });
 
@@ -34,8 +34,7 @@ router.put("/:id", async (req, res) => {
       lastName: req.body.lastName,
       isGold: req.body.isGold,
       phone: req.body.phone
-    },
-    { new: true }
+    }
   );
 
   if (!customer)
