@@ -22,17 +22,13 @@ router.post('/', [auth, validate(validateReturn)], async (req, res) => {
     await rental.return();
     await rental.save();
 
-    await Movie.update({ _id: rental.movie._id }, {
-        $inc: { numberInStock: 1 }
-    });
-
     return res.send(rental);
   });
 
   function validateReturn(req) {
   const schema = {
-    customerId: Joi.objectId().required(),
-    movieId: Joi.objectId().required()
+    customerId: Joi.number().required(),
+    movieId: Joi.number().required()
   };
 
   return Joi.validate(req, schema);

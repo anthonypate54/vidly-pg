@@ -77,7 +77,7 @@ static async findById(rentalId) {
         res =  await client.query('UPDATE rental SET datereturned = $1, rentalfee = $2 \
           RETURNING rental.* WHERE rentalid = $3',[this.customerId, this.movieId]);
 
-        await client.query('UPDATE movie SET numberinstock =  numberinstock - 1 where movieid = $1', [this.movieId])  
+        await client.query('UPDATE movie SET numberinstock =  numberinstock + 1 where movieid = $1', [this.movieId])  
 
         // now update the movie obj
         await client.query('COMMIT');
@@ -91,7 +91,7 @@ static async findById(rentalId) {
     }
     return res.rows[0];
   }
-  
+
   static async findByIdAndUpdate(id, rentalObj) {
       const client = await pool.connect();
       let res = "";
@@ -134,14 +134,14 @@ static async findById(rentalId) {
     return res.rowCount > 0 ? res.rows[0] : null;
   }
 
-  static return() {
+  return() {
     this.dateReturned = new Date();
 
     const rentalDays = moment().diff(this.dateOut, "days");
-    this.rentalFee = rentalDays * dailyRentalRate;
+    this.rentalFee = rentalDays * this.dailyRentalRate;
   }
 
-  static async lookup(customerId, movieId) {
+  async lookup(customerId, movieId) {
     const client = await pool.connect();
     let res = "";
     try {
@@ -154,8 +154,9 @@ static async findById(rentalId) {
     finally {
         client.release();
     }
-    this.dateOut = rows[0].dateout;
-    this.dailyRentalRate = rows[0].dailyrentalrate;
+    this.dateOut = res.rows[0].dateout;
+    console.log(this.dailyRentalRate);
+    this.dailyRentalRate = res.rows[0].dailyrentalrate;
 
     return res.rows[0];
   }
