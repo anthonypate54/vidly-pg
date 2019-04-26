@@ -24,11 +24,11 @@ const pool = require("./db");
     return res.rows;
   }
 
-  static async findById(id) {
+  static async findById(customerId) {
     const client = await pool.connect();
     let res = "";
     try {
-      res = await client.query('SELECT * FROM customer WHERE id = $1', [id]);
+      res = await client.query('SELECT * FROM customer WHERE customerid = $1', [customerId]);
     }
     catch(err) {
         throw err;
@@ -59,15 +59,15 @@ const pool = require("./db");
     return res.rows;
   }
 
-  static async findByIdAndUpdate(id, customerObj) {
+  static async findByIdAndUpdate(customerId, customerObj) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
         res =  await client.query('UPDATE customer SET lastname = $1, firstname= $2, isgold = $3, phone = $4  \
-          WHERE id = $5 RETURNING customer.*',
-        [customerObj.lastName, customerObj.firstName, customerObj.isGold, customerObj.phone, id]);
+          WHERE customerid = $5 RETURNING customer.*',
+        [customerObj.lastName, customerObj.firstName, customerObj.isGold, customerObj.phone, customerId]);
 
         await client.query('COMMIT');
       }
@@ -81,13 +81,13 @@ const pool = require("./db");
     return res.rowCount > 0 ? res.rows[0] : null;
   }
 
-  static async findByIdAndRemove(id) {
+  static async findByIdAndRemove(customerId) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('DELETE FROM customer WHERE id = $1 RETURNING customer.*', [id]);
+        res =  await client.query('DELETE FROM customer WHERE customerid = $1 RETURNING customer.*', [customerId]);
         await client.query('COMMIT');
       }
       catch(err) {

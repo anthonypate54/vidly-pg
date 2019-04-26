@@ -13,15 +13,19 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
+  console.log("before");
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const genre = await Genre.findById(req.body.genreId);
+  console.log("after");
+
   if (!genre) return res.status(400).send("Invalid genre.");
 
+  console.log("here 1");
   const movie = new Movie({
     title: req.body.title,
-    genreId: genre.id,
+    genreId: genre.genreid,
     numberInStock: req.body.numberInStock,
     dailyRentalRate: req.body.dailyRentalRate,
   });

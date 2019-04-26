@@ -15,7 +15,7 @@ class Movie {
     const client = await pool.connect();
     let res = "";
     try {
-      res = await client.query('SELECT * FROM movies ORDER BY title');
+      res = await client.query('SELECT * FROM movie ORDER BY title');
     }
     catch(err) {
         throw err;
@@ -26,12 +26,13 @@ class Movie {
     return res.rows;
   }
 
-  static async findById(id) {
+  static async findById(movieId) {
     const client = await pool.connect();
     let res = "";
+
     try {
-      res = await client.query('SELECT m.*, g.* FROM movies m INNER JOIN genres g \
-        ON m.genreid=g.id WHERE m.id = $1', [id]);
+      res = await client.query('SELECT m.*, g.* FROM movie m INNER JOIN genres g \
+        ON m.genreid=g.genreid WHERE m.movieid = $1',[movieId]);
     }
     catch(err) {
         throw err;
@@ -48,8 +49,8 @@ class Movie {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('INSERT INTO movies (title, genreid, numberinstock,dailyrentalrate) VALUES ($1, $2, $3, $4) \
-          RETURNING movies.*',[this.title, this.genreId, this.numberInStock, this.dailyRentalRate]);
+        res =  await client.query('INSERT INTO movie (title, genreid, numberinstock,dailyrentalrate) VALUES ($1, $2, $3, $4) \
+          RETURNING movie.*',[this.title, this.genreId, this.numberInStock, this.dailyRentalRate]);
         await client.query('COMMIT');
       }
       catch(err) {
@@ -62,15 +63,15 @@ class Movie {
     return res.rows;
   }
 
-  static async findByIdAndUpdate(id, movieObj) {
+  static async findByIdAndUpdate(movieId, movieObj) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('UPDATE movies SET title = $1, genreid= $2, numberinstock = $3, dailyRentalRate = $4, \
-        liked = $5 WHERE id = $6 RETURNING movies.*',
-        [movieObj.title, movieObj.genreId, movieObj.numberInStock, movieObj.dailyRentalRate, movieObj.liked, id]);
+        res =  await client.query('UPDATE movie SET title = $1, genreid= $2, numberinstock = $3, dailyRentalRate = $4, \
+        liked = $5 WHERE movieid = $6 RETURNING movie.*',
+        [movieObj.title, movieObj.genreId, movieObj.numberInStock, movieObj.dailyRentalRate, movieObj.liked, movieId]);
 
         await client.query('COMMIT');
       }
@@ -84,13 +85,13 @@ class Movie {
     return res.rowCount > 0 ? res.rows[0] : null;
   }
 
-  static async findByIdAndRemove(id) {
+  static async findByIdAndRemove(movieId) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('DELETE FROM movies WHERE id = $1 RETURNING movies.*', [id]);
+        res =  await client.query('DELETE FROM movie WHERE movieid = $1 RETURNING movie.*', [movieId]);
         await client.query('COMMIT');
       }
       catch(err) {

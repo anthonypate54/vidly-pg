@@ -21,11 +21,11 @@ class Genre {
       return res.rows;
   }
 
-  static async findById(id) {
+  static async findById(genreId) {
     const client = await pool.connect();
     let res = "";
     try {
-      res = await client.query('SELECT * FROM genres WHERE id = $1', [id]);
+      res = await client.query('SELECT * FROM genres WHERE genreid = $1', [genreId]);
     }
     catch(err) {
         throw err;
@@ -36,13 +36,13 @@ class Genre {
     return res.rowCount > 0 ? res.rows[0] : null;
   }
 
-  static async findByIdAndUpdate(id, reqObj) {
+  static async findByIdAndUpdate(genreId, reqObj) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('UPDATE genres SET name = $1 WHERE id = $2 RETURNING genres.*', [reqObj.name, id]);
+        res =  await client.query('UPDATE genres SET name = $1 WHERE genreid = $2 RETURNING genres.*', [reqObj.name, genreId]);
         await client.query('COMMIT');
       }
       catch(err) {
@@ -55,13 +55,13 @@ class Genre {
     return res.rowCount > 0 ? res.rows[0] : null;
   }
 
-  static async findByIdAndRemove(id) {
+  static async findByIdAndRemove(genreId) {
     const client = await pool.connect();
     let res = "";
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('DELETE FROM genres WHERE id = $1 RETURNING genres.*', [id]);
+        res =  await client.query('DELETE FROM genres WHERE genreid = $1 RETURNING genres.*', [genreId]);
         await client.query('COMMIT');
       }
       catch(err) {
@@ -81,7 +81,7 @@ class Genre {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('INSERT INTO genres (name) VALUES ($1) RETURNING id',[this.name]);
+        res =  await client.query('INSERT INTO genres (name) VALUES ($1) RETURNING genreid',[this.name]);
         await client.query('COMMIT');
       }
       catch(err) {
