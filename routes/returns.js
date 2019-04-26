@@ -9,9 +9,11 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', [auth, validate(validateReturn)], async (req, res) => {
-    const rental = await Rental.lookup(req.body.customerId, req.body.movieId);
 
-    if(!rental)
+    const rental = new Rental(req.body.customerId, req.body.movieId);
+    const retVal = await rental.lookup(req.body.customerId, req.body.movieId);
+
+    if(!retVal)
         return res.status(404).send('Rental not found');
 
     if(rental.dateReturned) 
