@@ -20,7 +20,7 @@ router.post('/', [auth, validate(validateReturn)], async (req, res) => {
         return res.status(400).send('Return already processed'); 
     
     await rental.return();
-    await rental.save();
+    await rental.update();
 
     return res.send(rental);
   });

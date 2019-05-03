@@ -17,7 +17,7 @@ class User {
       try {
         await client.query('BEGIN');
         try {
-          res =  await client.query('INSERT INTO users (name, email, password, isAdmin) VALUES ($1, $2, $3, $4) RETURNING id',[this.name, this.email, this.password, this.isAdmin]);
+          res =  await client.query('INSERT INTO users (name, email, password, isAdmin) VALUES ($1, $2, $3, $4) RETURNING _id',[this.name, this.email, this.password, this.isAdmin]);
           await client.query('COMMIT');
         }
         catch(err) {
@@ -42,7 +42,6 @@ class User {
       finally {
           client.release();
       }
-      console.log(res.rows);
       return res.rowCount > 0 ? res.rows : null;
      
    }
@@ -51,7 +50,7 @@ class User {
     const client = await pool.connect();
     let res = "";
     try {
-      res = await client.query('SELECT name, email FROM users WHERE id = $1', [id]);
+      res = await client.query('SELECT name, email FROM users WHERE _id = $1', [id]);
     }
     catch(err) {
         throw err;

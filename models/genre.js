@@ -25,7 +25,7 @@ class Genre {
     const client = await pool.connect();
     let res = "";
     try {
-      res = await client.query('SELECT * FROM genres WHERE genreid = $1', [genreId]);
+      res = await client.query('SELECT * FROM genres WHERE _id = $1', [genreId]);
     }
     catch(err) {
         throw err;
@@ -42,7 +42,7 @@ class Genre {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('UPDATE genres SET name = $1 WHERE genreid = $2 RETURNING genres.*', [reqObj.name, genreId]);
+        res =  await client.query('UPDATE genres SET name = $1 WHERE _id = $2 RETURNING genres.*', [reqObj.name, genreId]);
         await client.query('COMMIT');
       }
       catch(err) {
@@ -61,7 +61,7 @@ class Genre {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('DELETE FROM genres WHERE genreid = $1 RETURNING genres.*', [genreId]);
+        res =  await client.query('DELETE FROM genres WHERE _id = $1 RETURNING genres.*', [genreId]);
         await client.query('COMMIT');
       }
       catch(err) {
@@ -81,7 +81,7 @@ class Genre {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('INSERT INTO genres (name) VALUES ($1) RETURNING genreid',[this.name]);
+        res =  await client.query('INSERT INTO genres (name) VALUES ($1) RETURNING _id',[this.name]);
         await client.query('COMMIT');
       }
       catch(err) {

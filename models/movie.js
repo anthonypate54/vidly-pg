@@ -32,7 +32,7 @@ class Movie {
 
     try {
       res = await client.query('SELECT m.*, g.* FROM movie m INNER JOIN genres g \
-        ON m.genreid=g.genreid WHERE m.movieid = $1',[movieId]);
+        ON m.genreid=g._id WHERE m._id = $1',[movieId]);
     }
     catch(err) {
         throw err;
@@ -70,7 +70,7 @@ class Movie {
       await client.query('BEGIN');
       try {
         res =  await client.query('UPDATE movie SET title = $1, genreid= $2, numberinstock = $3, dailyRentalRate = $4, \
-        liked = $5 WHERE movieid = $6 RETURNING movie.*',
+        liked = $5 WHERE _id = $6 RETURNING movie.*',
         [movieObj.title, movieObj.genreId, movieObj.numberInStock, movieObj.dailyRentalRate, movieObj.liked, movieId]);
 
         await client.query('COMMIT');
@@ -91,7 +91,7 @@ class Movie {
     try {
       await client.query('BEGIN');
       try {
-        res =  await client.query('DELETE FROM movie WHERE movieid = $1 RETURNING movie.*', [movieId]);
+        res =  await client.query('DELETE FROM movie WHERE _id = $1 RETURNING movie.*', [movieId]);
         await client.query('COMMIT');
       }
       catch(err) {
